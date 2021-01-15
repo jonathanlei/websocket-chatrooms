@@ -33,6 +33,7 @@ app.ws("/chat/:roomName", function (ws, req, next) {
     // register handlers for message-received, connection-closed
 
     ws.on("message", function (data) {
+      // console.log(data, "data");
       try {
         user.handleMessage(data);
       } catch (err) {

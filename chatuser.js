@@ -60,6 +60,15 @@ class ChatUser {
     });
   }
 
+
+  handleJoke() {
+    this.room.reply({
+      name: this.name,
+      type: "joke",
+      text: "What do you call a bear with no teeth? A gummy bear!"
+    });
+  }
+
   /** Handle messages from client:
    *
    * @param jsonData {string} raw message data
@@ -71,9 +80,11 @@ class ChatUser {
    */
 
   handleMessage(jsonData) {
+    console.log(jsonData, "json data");
     let msg = JSON.parse(jsonData);
 
     if (msg.type === "join") this.handleJoin(msg.name);
+    else if (msg.type === "joke") this.handleJoke();
     else if (msg.type === "chat") this.handleChat(msg.text);
     else throw new Error(`bad message: ${msg.type}`);
   }
