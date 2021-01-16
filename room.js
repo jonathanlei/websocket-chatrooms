@@ -70,7 +70,7 @@ class Room {
 * 
 * @param data {string} message to send
 */
-  reply(data){
+  reply(data) {
     let username = data.name;
     let users = [...this.members].filter(m => m.name === username);
     let user = users[0];

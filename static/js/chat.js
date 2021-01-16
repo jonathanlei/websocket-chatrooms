@@ -7,7 +7,6 @@ const ws = new WebSocket(`ws://localhost:3000/chat/${roomName}`);
 
 const name = prompt("Username?");
 
-
 /** called when connection opens, sends join info to server. */
 
 ws.onopen = function (evt) {
@@ -25,6 +24,12 @@ ws.onmessage = function (evt) {
 
   let msg = JSON.parse(evt.data);
   let item;
+  if (msg.type === "dupName") {
+    console.log('made it to front end if');
+    let reName = prompt(`${msg.name} ${msg.text}`);
+    let data = { type: "join", name: reName };
+    ws.send(JSON.stringify(data));
+  }
 
   if (msg.type === "note") {
     item = $(`<li><i>${msg.text}</i></li>`);
@@ -32,6 +37,8 @@ ws.onmessage = function (evt) {
     item = $(`<li><b>${msg.name}: </b>${msg.text}</li>`);
   } else if (msg.type === "joke"){
     item = $(`<li><b> Here's your joke: </b>${msg.text}</li>`);
+  } else if (msg.type === "members"){
+    item = $(`<li><b> Current Members: </b>${msg.text}</li>`);
   } else {
     return console.error(`bad message: ${msg}`);
   }
@@ -58,11 +65,14 @@ ws.onclose = function (evt) {
 
 $("form").submit(function (evt) {
   evt.preventDefault();
+  const text = $("#m").val();
   let data;
-  if ($("#m").val() === "/joke"){
-    data = { type: "joke"};
-  }else{
-    data = { type: "chat", text: $("#m").val() };
+  if (text === "/joke") {
+    data = { type: "joke" };
+  } else if (text === "/members") {
+    data = { type: "members" };
+  } else {
+    data = { type: "chat", text: text };
   }
   ws.send(JSON.stringify(data));
 

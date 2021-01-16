@@ -39,6 +39,20 @@ class ChatUser {
    * */
 
   handleJoin(name) {
+    TODO: filter existing names here
+
+    for (let m of this.room.members) {
+      if (m.name === name) {
+        this.reply({
+          name: m.name,
+          type: "dupName",
+          text: "is already taken, please choose something else."
+        });
+        console.log('stopped dup from being added')
+        break;
+      }
+    }
+
     this.name = name;
     this.room.join(this);
     this.room.broadcast({
@@ -60,12 +74,30 @@ class ChatUser {
     });
   }
 
-
+  /** Handle a command for joke: broadcast to user.
+   *
+   * @param text {string} message to send
+   * */
   handleJoke() {
     this.room.reply({
       name: this.name,
       type: "joke",
       text: "What do you call a bear with no teeth? A gummy bear!"
+    });
+  }
+  
+  /** Handle a command for list of members: broadcast to user.
+   *
+   * @param text {string} message to send
+   * */
+  handleMembers() {
+    let members = [...this.room.members];
+    members = members.map(m => m.name);
+    members = members.join(', ');
+    this.room.reply({
+      name: this.name,
+      type: "members",
+      text: `${members}`
     });
   }
 
@@ -85,6 +117,7 @@ class ChatUser {
 
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "joke") this.handleJoke();
+    // else if (msg.type === "members") this.handleMembers(); 
     else if (msg.type === "chat") this.handleChat(msg.text);
     else throw new Error(`bad message: ${msg.type}`);
   }
